@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tweetapp.constants.Constants;
 import com.tweetapp.dto.ForgotPasswordDto;
+import com.tweetapp.exception.EmailAlreadyExistsException;
 import com.tweetapp.exception.UsernameAlreadyExistsException;
 import com.tweetapp.model.AuthRequest;
 import com.tweetapp.model.AuthResponse;
@@ -34,12 +35,13 @@ public class UserController {
 	private Logger logger = LogManager.getLogger(UserController.class);
 	
 	@GetMapping("/home")
-	public String home() {
-		return "Inside TweetApp() Home method ...";
+	public ResponseEntity<Response> home() {
+		logger.info("Inside TweetApp() Home method ...");
+		return new ResponseEntity<Response>(new Response(Constants.SUCCESS, Constants.HTTP_OK, "User Authenticated !"), HttpStatus.OK);
 	}
 	
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@RequestBody User user) throws UsernameAlreadyExistsException {
+	public ResponseEntity<Response> registerUser(@RequestBody User user) throws Exception {
 		User registerUser = userService.registerUser(user);
 		Response response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "UserCreated !",registerUser);
 		if(registerUser == null) {
@@ -49,7 +51,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/login")
-	public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+	public ResponseEntity<Response> login(@RequestBody AuthRequest authRequest) {
 		AuthResponse authResponse = userService.login(authRequest);
 		logger.info("Token info = "+authResponse.toString());
 		Response response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "User Logged in", authResponse);
@@ -58,19 +60,19 @@ public class UserController {
 	}
 	
 	@GetMapping("/{username}/forgot")
-	public ResponseEntity<?> forgrtPassword(@PathVariable("username") String username, @RequestBody ForgotPasswordDto forgotPasswordDto) {
+	public ResponseEntity<Response> forgrtPassword(@PathVariable("username") String username, @RequestBody ForgotPasswordDto forgotPasswordDto) {
 		Response response = userService.forgotPassword(username, forgotPasswordDto);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 	
 	@GetMapping("/users/all")
-	public ResponseEntity<?> getAllUsers() {
+	public ResponseEntity<Response> getAllUsers() {
 		Response allUsers = userService.getAllUsers();
 		return new ResponseEntity<Response>(allUsers, HttpStatus.OK);
 	}
 	
 	@GetMapping("/user/search/{username}")
-	public ResponseEntity<?> searchByUsername(@PathVariable("username") String username) {
+	public ResponseEntity<Response> searchByUsername(@PathVariable("username") String username) {
 		Response response = userService.getUserByUsername(username);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}

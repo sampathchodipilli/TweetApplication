@@ -19,6 +19,8 @@ public class Tweets {
 	@Field(name = "tweet_description")
 	private String tweetDescription;
 
+	private String email;
+
 	private String username;
 
 	@Field(name = "creation_time")
@@ -39,17 +41,18 @@ public class Tweets {
 		super();
 	}
 
-	@PersistenceConstructor
-	public Tweets(String id, String tweetDescription, String username, LocalDateTime creationTime, Integer likeCount,
-			List<Reply> replies, List<String> likedByList) {
+	public Tweets(String id, String tweetDescription, String email, String username, LocalDateTime creationTime,
+			Integer likeCount, List<Reply> replies, List<String> likedByList, String likedBy) {
 		super();
 		this.id = id;
 		this.tweetDescription = tweetDescription;
+		this.email = email;
 		this.username = username;
 		this.creationTime = creationTime;
 		this.likeCount = likeCount;
 		this.replies = replies;
 		this.likedByList = likedByList;
+		this.likedBy = likedBy;
 	}
 
 	public String getId() {
@@ -66,6 +69,14 @@ public class Tweets {
 
 	public void setTweetDescription(String tweetDescription) {
 		this.tweetDescription = tweetDescription;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getUsername() {
@@ -118,8 +129,8 @@ public class Tweets {
 
 	@Override
 	public String toString() {
-		return "Tweets [id=" + id + ", tweetDescription=" + tweetDescription + ", username=" + username
-				+ ", creationTime=" + creationTime + ", likeCount=" + likeCount + ", replies=" + replies
+		return "Tweets [id=" + id + ", tweetDescription=" + tweetDescription + ", email=" + email + ", username="
+				+ username + ", creationTime=" + creationTime + ", likeCount=" + likeCount + ", replies=" + replies
 				+ ", likedByList=" + likedByList + ", likedBy=" + likedBy + "]";
 	}
 

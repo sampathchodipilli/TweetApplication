@@ -9,30 +9,33 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class User {
 	@Id
 	private String id;
-	
+
 	@Field(name = "first_name")
 	private String firstName;
-	
+
 	@Field(name = "last_name")
 	private String lastName;
-	
+
+	private String username;
+
 	private String email;
-	
+
 	private String password;
-	
+
 	@Field(name = "contact_number")
 	private String contactNumber;
 
 	public User() {
 		super();
 	}
-	
-	@PersistenceConstructor
-	public User(String id, String firstName, String lastName, String email, String password, String contactNumber) {
+
+	public User(String id, String firstName, String lastName, String username, String email, String password,
+			String contactNumber) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.contactNumber = contactNumber;
@@ -62,6 +65,14 @@ public class User {
 		this.lastName = lastName;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	public String getEmail() {
 		return email;
 	}
@@ -88,8 +99,8 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", password=" + password + ", contactNumber=" + contactNumber + "]";
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", username=" + username
+				+ ", email=" + email + ", password=" + password + ", contactNumber=" + contactNumber + "]";
 	}
 
 }

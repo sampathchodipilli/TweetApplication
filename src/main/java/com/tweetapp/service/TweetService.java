@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -19,13 +20,18 @@ import com.tweetapp.constants.Constants;
 import com.tweetapp.model.Reply;
 import com.tweetapp.model.Response;
 import com.tweetapp.model.Tweets;
+import com.tweetapp.model.User;
 import com.tweetapp.repository.TweetRepository;
+import com.tweetapp.repository.UserRepository;
 
 @Service
 public class TweetService {
 	
 	@Autowired
 	private TweetRepository tweetRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	private Logger logger = LogManager.getLogger(TweetService.class);
 
@@ -46,11 +52,11 @@ public class TweetService {
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 
-	public Response getTweetsByUsername(String username) {
+	public Response getTweetsByUsername(String email) {
 		logger.info("Inside getTweetsByUsername() ...");
 		Response response;
 		try {
-			Optional<List<Tweets>> optional = tweetRepository.findByUsername(username);
+			Optional<List<Tweets>> optional = tweetRepository.findByEmail(email);
 			if(optional.isPresent() && optional.get().size()>0) {
 				response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "Tweets Found", optional.get());
 			} else {
@@ -63,10 +69,16 @@ public class TweetService {
 		return response;
 	}
 
-	public Response postNewTweet(String username, Tweets tweet) {
+	public Response postNewTweet(String email, Tweets tweet) {
 		logger.info("Inside postNewTweet() ...");
 		Response response;
-		tweet.setUsername(username);
+		Optional<User> optional = userRepository.findByEmail(email);
+		if(optional.isPresent()) {
+			tweet.setUsername(optional.get().getUsername());
+		} else {
+			throw new UsernameNotFoundException("User Not Found !");
+		}
+		tweet.setEmail(email);
 		tweet.setCreationTime(LocalDateTime.now());
 		tweet.setLikeCount(0);
 		tweet.setLikedByList(new ArrayList<>());
@@ -81,7 +93,7 @@ public class TweetService {
 		return response;
 	}
 
-	public Response updateTweet(String username, String id, Tweets tweet) {
+	public Response updateTweet(String email, String id, Tweets tweet) {
 		logger.info("Inside updateTweet() ...");
 		Response response;
 		Optional<Tweets> optional = tweetRepository.findById(id);
@@ -102,30 +114,31 @@ public class TweetService {
 		return response;
 	}
 
-	public Response deleteTweet(String username, String id) {
-		logger.info("Inside deleteTweet() ... ");
+	public Response deleteTweet(String email, String id) {
 		Response response;
+		logger.info("Inside deleteTweet() ... ");
 		try {
 			tweetRepository.deleteById(id);
-			logger.info("Tweet Deleted !");
+			logger.info("Tweet Deleted Successfully !");
 			response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "Tweet Deleted");
 		} catch (Exception e) {
 			logger.error("Error : ",e);
 			response = new Response(Constants.FAILED, Constants.BAD_REQUEST, "Tweet Deletion Failed");
 		}
+		response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "Tweet Deleted");
 		return response;
 	}
 
-	public Response likeTweet(String username, String id) {
+	public Response likeTweet(String email, String id) {
 		logger.info("Inside likeTweet() ...");
 		Response response;
 		Optional<Tweets> optional = tweetRepository.findById(id);
 		if(optional.isPresent()) {
 			Tweets tweet = optional.get();
 			List<String> likedByList = tweet.getLikedByList();
-			if(!checkUsernameInList(username, likedByList)) {
+			if(!checkEmailInList(email, likedByList)) {
 				tweet.setLikeCount(tweet.getLikeCount()+1);
-				likedByList.add(username);
+				likedByList.add(email);
 				tweet.setLikedByList(likedByList);
 				tweetRepository.save(tweet);
 				response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "Tweet Liked");
@@ -139,23 +152,26 @@ public class TweetService {
 		return response;
 	}
 
-	private boolean checkUsernameInList(String username, List<String> likedByList) {
-		Optional<String> findAny = likedByList.stream().filter(rec -> rec.equals(username)).findAny();
+	private boolean checkEmailInList(String email, List<String> likedByList) {
+		Optional<String> findAny = likedByList.stream().filter(rec -> rec.equals(email)).findAny();
 		if(findAny.isPresent()) {
 			return true;
 		}
 		return false;
 	}
 
-	public Response replyToTweet(String username, String id, Reply reply) {
+	public Response replyToTweet(String email, String id, Reply reply) {
 		logger.info("Inside replyToTweet() ...");
 		Response response;
 		reply.setCreationTime(LocalDateTime.now());
-		reply.setUsername(username);
+		reply.setEmail(email);
 		try {
 			Optional<Tweets> optional = tweetRepository.findById(id);
-			if(optional.isPresent()) {
+			Optional<User> optional2 = userRepository.findByEmail(email);
+			if(optional.isPresent() && optional2.isPresent()) {
 				Tweets tweet = optional.get();
+				User user = optional2.get();
+				reply.setUsername(user.getUsername());
 				List<Reply> replies = tweet.getReplies();
 				replies.add(reply);
 				tweet.setReplies(replies);

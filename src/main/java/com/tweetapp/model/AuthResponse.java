@@ -4,25 +4,25 @@ public class AuthResponse {
 
 	private final String jwt;
 
-	private final String username;
+	private final User user;
 
-	public AuthResponse(String jwt, String username) {
+	public AuthResponse(String jwt, User user) {
 		super();
 		this.jwt = jwt;
-		this.username = username;
+		this.user = user;
 	}
 
 	public String getJwt() {
 		return jwt;
 	}
 
-	public String getUsername() {
-		return username;
+	public User getUser() {
+		return user;
 	}
 
 	@Override
 	public String toString() {
-		return "AuthResponse [jwt=" + jwt + ", username=" + username + "]";
+		return "AuthResponse [jwt=" + jwt + ", user=" + user + "]";
 	}
 
 }

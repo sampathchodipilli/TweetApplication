@@ -1,6 +1,7 @@
 package com.tweetapp.exception;
 
 public class UsernameAlreadyExistsException extends Exception {
+	
 	/**
 	 * 
 	 */
