@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tweetapp.constants.Constants;
 import com.tweetapp.dto.ForgotPasswordDto;
-import com.tweetapp.exception.EmailAlreadyExistsException;
-import com.tweetapp.exception.UsernameAlreadyExistsException;
 import com.tweetapp.model.AuthRequest;
 import com.tweetapp.model.AuthResponse;
 import com.tweetapp.model.Response;
