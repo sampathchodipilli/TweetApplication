@@ -48,7 +48,7 @@ public class UserController {
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping("/login")
+	@PostMapping("/login")
 	public ResponseEntity<Response> login(@RequestBody AuthRequest authRequest) {
 		AuthResponse authResponse = userService.login(authRequest);
 		logger.info("Token info = "+authResponse.toString());
