@@ -20,7 +20,7 @@ public class JwtTokenService {
 	
 	private Logger logger = LogManager.getLogger(JwtTokenService.class);
 
-	public static final long ACCESS_TOKEN_VALIDITY = 30 * 60 * 1000;
+	public static final long ACCESS_TOKEN_VALIDITY = 4 * 60 * 60 * 1000;
 	
 	public JwtTokenService(@Value("${secret.key}") final String secret) {
 		this.hmac512 = Algorithm.HMAC512(secret);
