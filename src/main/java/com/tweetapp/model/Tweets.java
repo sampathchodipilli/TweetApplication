@@ -23,6 +23,12 @@ public class Tweets {
 
 	private String username;
 
+	@Transient
+	private String firstName;
+
+	@Transient
+	private String lastName;
+
 	@Field(name = "creation_time")
 	private LocalDateTime creationTime;
 
@@ -127,11 +133,28 @@ public class Tweets {
 		this.likedBy = likedBy;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
 	@Override
 	public String toString() {
 		return "Tweets [id=" + id + ", tweetDescription=" + tweetDescription + ", email=" + email + ", username="
-				+ username + ", creationTime=" + creationTime + ", likeCount=" + likeCount + ", replies=" + replies
-				+ ", likedByList=" + likedByList + ", likedBy=" + likedBy + "]";
+				+ username + ", firstName=" + firstName + ", lastName=" + lastName + ", creationTime=" + creationTime
+				+ ", likeCount=" + likeCount + ", replies=" + replies + ", likedByList=" + likedByList + ", likedBy="
+				+ likedBy + "]";
 	}
 
 }

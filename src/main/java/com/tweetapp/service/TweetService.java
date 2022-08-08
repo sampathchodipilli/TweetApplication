@@ -40,6 +40,16 @@ public class TweetService {
 		Response response;
 		try {
 			List<Tweets> list = tweetRepository.findAll();
+			list.stream().forEach(rec -> {
+				Optional<User> optional = userRepository.findByEmail(rec.getEmail());
+				User user = optional.get();
+				rec.setFirstName(user.getFirstName());
+				rec.setLastName(user.getLastName());
+				rec.getReplies().stream().forEach(reply -> {
+					reply.setFirstName(user.getFirstName());
+					reply.setLastName(user.getLastName());
+				});
+			});
 			if(!ObjectUtils.isEmpty(list)) {
 				response = new Response(Constants.SUCCESS, Constants.HTTP_OK, null, list);
 			} else {
@@ -57,7 +67,17 @@ public class TweetService {
 		Response response;
 		try {
 			Optional<List<Tweets>> optional = tweetRepository.findByEmail(email);
+			Optional<User> userOptional = userRepository.findByEmail(email);
 			if(optional.isPresent() && optional.get().size()>0) {
+				List<Tweets> list = optional.get();
+				list.stream().forEach(rec -> {
+					rec.setFirstName(userOptional.get().getFirstName());
+					rec.setLastName(userOptional.get().getLastName());
+					rec.getReplies().stream().forEach(reply ->{
+						reply.setFirstName(userOptional.get().getFirstName());
+						reply.setLastName(userOptional.get().getLastName());
+					});
+				});
 				response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "Tweets Found", optional.get());
 			} else {
 				response = new Response(Constants.FAILED, Constants.INTERNAL_ERROR, "No Tweets Found", null);

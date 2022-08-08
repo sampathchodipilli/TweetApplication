@@ -7,6 +7,8 @@ public class Reply {
 	private String tag;
 	private String email;
 	private String username;
+	private String firstName;
+	private String lastName;
 	private LocalDateTime creationTime;
 
 	public Reply() {
@@ -62,10 +64,26 @@ public class Reply {
 		this.creationTime = creationTime;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
 	@Override
 	public String toString() {
-		return "Reply [reply=" + reply + ", tag=" + tag + ", email=" + email + ", username=" + username
-				+ ", creationTime=" + creationTime + "]";
+		return "Reply [reply=" + reply + ", tag=" + tag + ", email=" + email + ", username=" + username + ", firstName="
+				+ firstName + ", lastName=" + lastName + ", creationTime=" + creationTime + "]";
 	}
 
 }
