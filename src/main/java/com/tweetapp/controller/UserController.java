@@ -47,21 +47,21 @@ public class UserController {
 	@GetMapping("/home")
 	public ResponseEntity<Response> home(@RequestHeader Map<String, String> headers) throws Exception {
 		logger.info("Inside TweetApp() Home method ...");
-		User user = null;
-		headers.forEach((k,v) -> {
-			logger.info(k," - ",v);
-		});
-		String bearerToken = headers.get("Authorization");
-		String username = jwtTokenService.validateTokenAndGetUsername(bearerToken);
-		try {
-			Optional<User> findByEmail = userRepository.findByEmail(username);
-			if(findByEmail.isPresent()) {
-				user = findByEmail.get();
-			}
-		} catch(Exception e) {
-			throw new Exception("User Not Authenticated !");
-		}
-		return new ResponseEntity<Response>(new Response(Constants.SUCCESS, Constants.HTTP_OK, "User Authenticated !", user), HttpStatus.OK);
+//		User user = null;
+//		headers.forEach((k,v) -> {
+//			logger.info(k," - ",v);
+//		});
+//		String bearerToken = headers.get("Authorization");
+//		String username = jwtTokenService.validateTokenAndGetUsername(bearerToken);
+//		try {
+//			Optional<User> findByEmail = userRepository.findByEmail(username);
+//			if(findByEmail.isPresent()) {
+//				user = findByEmail.get();
+//			}
+//		} catch(Exception e) {
+//			throw new Exception("User Not Authenticated !");
+//		}
+		return new ResponseEntity<Response>(new Response(Constants.SUCCESS, Constants.HTTP_OK, "User Authenticated !"), HttpStatus.OK);
 	}
 	
 	@PostMapping("/register")
