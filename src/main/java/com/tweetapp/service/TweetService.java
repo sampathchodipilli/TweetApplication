@@ -77,7 +77,6 @@ public class TweetService {
 		Optional<User> optional = userRepository.findByEmail(email);
 		if (optional.isPresent()) {
 			User user = optional.get();
-			logger.info("user = "+user);
 			tweet.setUsername(user.getUsername());
 			tweet.setFirstName(user.getFirstName());
 			tweet.setLastName(user.getLastName());

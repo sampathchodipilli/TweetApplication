@@ -83,7 +83,7 @@ public class UserController {
 		
 	}
 	
-	@GetMapping("/{username}/forgot")
+	@PostMapping("/{username}/forgot")
 	public ResponseEntity<Response> forgrtPassword(@PathVariable("username") String username, @RequestBody ForgotPasswordDto forgotPasswordDto) {
 		Response response = userService.forgotPassword(username, forgotPasswordDto);
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
