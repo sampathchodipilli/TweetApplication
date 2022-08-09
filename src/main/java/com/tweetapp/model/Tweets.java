@@ -23,10 +23,8 @@ public class Tweets {
 
 	private String username;
 
-	@Transient
 	private String firstName;
 
-	@Transient
 	private String lastName;
 
 	@Field(name = "creation_time")
@@ -47,13 +45,16 @@ public class Tweets {
 		super();
 	}
 
-	public Tweets(String id, String tweetDescription, String email, String username, LocalDateTime creationTime,
-			Integer likeCount, List<Reply> replies, List<String> likedByList, String likedBy) {
+	public Tweets(String id, String tweetDescription, String email, String username, String firstName, String lastName,
+			LocalDateTime creationTime, Integer likeCount, List<Reply> replies, List<String> likedByList,
+			String likedBy) {
 		super();
 		this.id = id;
 		this.tweetDescription = tweetDescription;
 		this.email = email;
 		this.username = username;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.creationTime = creationTime;
 		this.likeCount = likeCount;
 		this.replies = replies;
@@ -91,6 +92,22 @@ public class Tweets {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public LocalDateTime getCreationTime() {
@@ -131,22 +148,6 @@ public class Tweets {
 
 	public void setLikedBy(String likedBy) {
 		this.likedBy = likedBy;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
 	}
 
 	@Override
