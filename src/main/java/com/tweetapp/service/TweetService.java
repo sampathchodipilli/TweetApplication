@@ -26,13 +26,13 @@ import com.tweetapp.repository.UserRepository;
 
 @Service
 public class TweetService {
-	
+
 	@Autowired
 	private TweetRepository tweetRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	private Logger logger = LogManager.getLogger(TweetService.class);
 
 	public ResponseEntity<Response> getAllTweets() {
@@ -40,23 +40,13 @@ public class TweetService {
 		Response response;
 		try {
 			List<Tweets> list = tweetRepository.findAll();
-			list.stream().forEach(rec -> {
-				Optional<User> optional = userRepository.findByEmail(rec.getEmail());
-				User user = optional.get();
-				rec.setFirstName(user.getFirstName());
-				rec.setLastName(user.getLastName());
-				rec.getReplies().stream().forEach(reply -> {
-					reply.setFirstName(user.getFirstName());
-					reply.setLastName(user.getLastName());
-				});
-			});
-			if(!ObjectUtils.isEmpty(list)) {
+			if (!ObjectUtils.isEmpty(list)) {
 				response = new Response(Constants.SUCCESS, Constants.HTTP_OK, null, list);
 			} else {
 				response = new Response(Constants.FAILED, Constants.INTERNAL_ERROR, "No tweets Found", null);
 			}
-		} catch(Exception e) {
-			logger.error("Error : ",e);
+		} catch (Exception e) {
+			logger.error("Error : ", e);
 			response = new Response(Constants.FAILED, Constants.INTERNAL_ERROR, "No tweets Found", null);
 		}
 		return new ResponseEntity<Response>(response, HttpStatus.OK);
@@ -68,22 +58,14 @@ public class TweetService {
 		try {
 			Optional<List<Tweets>> optional = tweetRepository.findByEmail(email);
 			Optional<User> userOptional = userRepository.findByEmail(email);
-			if(optional.isPresent() && optional.get().size()>0) {
+			if (optional.isPresent() && optional.get().size() > 0) {
 				List<Tweets> list = optional.get();
-				list.stream().forEach(rec -> {
-					rec.setFirstName(userOptional.get().getFirstName());
-					rec.setLastName(userOptional.get().getLastName());
-					rec.getReplies().stream().forEach(reply ->{
-						reply.setFirstName(userOptional.get().getFirstName());
-						reply.setLastName(userOptional.get().getLastName());
-					});
-				});
 				response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "Tweets Found", optional.get());
 			} else {
 				response = new Response(Constants.FAILED, Constants.INTERNAL_ERROR, "No Tweets Found", null);
 			}
-		} catch(Exception e) {
-			logger.error("Error : ",e);
+		} catch (Exception e) {
+			logger.error("Error : ", e);
 			response = new Response(Constants.FAILED, Constants.INTERNAL_ERROR, "No Tweets Found", null);
 		}
 		return response;
@@ -93,8 +75,11 @@ public class TweetService {
 		logger.info("Inside postNewTweet() ...");
 		Response response;
 		Optional<User> optional = userRepository.findByEmail(email);
-		if(optional.isPresent()) {
-			tweet.setUsername(optional.get().getUsername());
+		if (optional.isPresent()) {
+			User user = optional.get();
+			tweet.setUsername(user.getUsername());
+			tweet.setFirstName(user.getFirstName());
+			tweet.setLastName(user.getLastName());
 		} else {
 			throw new UsernameNotFoundException("User Not Found !");
 		}
@@ -106,9 +91,9 @@ public class TweetService {
 		try {
 			Tweets savedTweet = tweetRepository.save(tweet);
 			response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "Tweet Saved");
-		} catch(Exception e) {
-			logger.error("Error : ",e);
-			return new Response(Constants.FAILED, Constants.INTERNAL_ERROR,"Unable to save tweet");
+		} catch (Exception e) {
+			logger.error("Error : ", e);
+			return new Response(Constants.FAILED, Constants.INTERNAL_ERROR, "Unable to save tweet");
 		}
 		return response;
 	}
@@ -118,7 +103,7 @@ public class TweetService {
 		Response response;
 		Optional<Tweets> optional = tweetRepository.findById(id);
 		try {
-			if(optional.isPresent()) {
+			if (optional.isPresent()) {
 				Tweets tweets = optional.get();
 				tweets.setTweetDescription(tweet.getTweetDescription());
 				tweets.setCreationTime(LocalDateTime.now());
@@ -127,8 +112,8 @@ public class TweetService {
 			} else {
 				response = new Response(Constants.FAILED, Constants.BAD_REQUEST, "Tweet Updation Failed");
 			}
-		} catch(Exception e) {
-			logger.error("Error : ",e);
+		} catch (Exception e) {
+			logger.error("Error : ", e);
 			response = new Response(Constants.FAILED, Constants.BAD_REQUEST, "Tweet Updation Failed");
 		}
 		return response;
@@ -142,7 +127,7 @@ public class TweetService {
 			logger.info("Tweet Deleted Successfully !");
 			response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "Tweet Deleted");
 		} catch (Exception e) {
-			logger.error("Error : ",e);
+			logger.error("Error : ", e);
 			response = new Response(Constants.FAILED, Constants.BAD_REQUEST, "Tweet Deletion Failed");
 		}
 		response = new Response(Constants.SUCCESS, Constants.HTTP_OK, "Tweet Deleted");
@@ -153,11 +138,11 @@ public class TweetService {
 		logger.info("Inside likeTweet() ...");
 		Response response;
 		Optional<Tweets> optional = tweetRepository.findById(id);
-		if(optional.isPresent()) {
+		if (optional.isPresent()) {
 			Tweets tweet = optional.get();
 			List<String> likedByList = tweet.getLikedByList();
-			if(!checkEmailInList(email, likedByList)) {
-				tweet.setLikeCount(tweet.getLikeCount()+1);
+			if (!checkEmailInList(email, likedByList)) {
+				tweet.setLikeCount(tweet.getLikeCount() + 1);
 				likedByList.add(email);
 				tweet.setLikedByList(likedByList);
 				tweetRepository.save(tweet);
@@ -165,7 +150,7 @@ public class TweetService {
 			} else {
 				response = new Response(Constants.FAILED, Constants.INTERNAL_ERROR, "User Already liked the tweet");
 			}
-			
+
 		} else {
 			response = new Response(Constants.FAILED, Constants.INTERNAL_ERROR, "No tweet with this id exists");
 		}
@@ -174,7 +159,7 @@ public class TweetService {
 
 	private boolean checkEmailInList(String email, List<String> likedByList) {
 		Optional<String> findAny = likedByList.stream().filter(rec -> rec.equals(email)).findAny();
-		if(findAny.isPresent()) {
+		if (findAny.isPresent()) {
 			return true;
 		}
 		return false;
@@ -188,10 +173,12 @@ public class TweetService {
 		try {
 			Optional<Tweets> optional = tweetRepository.findById(id);
 			Optional<User> optional2 = userRepository.findByEmail(email);
-			if(optional.isPresent() && optional2.isPresent()) {
+			if (optional.isPresent() && optional2.isPresent()) {
 				Tweets tweet = optional.get();
 				User user = optional2.get();
 				reply.setUsername(user.getUsername());
+				reply.setFirstName(user.getFirstName());
+				reply.setLastName(user.getLastName());
 				List<Reply> replies = tweet.getReplies();
 				replies.add(reply);
 				tweet.setReplies(replies);
@@ -200,8 +187,8 @@ public class TweetService {
 			} else {
 				response = new Response(Constants.FAILED, Constants.BAD_REQUEST, "Unable to reply");
 			}
-		} catch(Exception e) {
-			logger.error("Error : ",e);
+		} catch (Exception e) {
+			logger.error("Error : ", e);
 			response = new Response(Constants.FAILED, Constants.BAD_REQUEST, "Unable to reply");
 		}
 		return response;
